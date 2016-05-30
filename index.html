@@ -71,7 +71,7 @@
 
       template: _.template("<%= id %>: <strong>Beer name: </strong><%= name %> <br><strong>Number of likes: </strong><%= likes %><br><br>"),
 
-      initialize: function() {
+      initialize: function() {  //  cf. http://chilipepperdesign.com/2013/01/15/backbone-js-bind-callback-to-successful-model-fetch/
         this.model.on('change', this.render, this);
         this.model.fetch({
             headers: {  //  This header must be declared to initialize the CORS spoofer.
