@@ -12,7 +12,7 @@
 
   <h2>Beer app</h2>
 
-  <div id="container">Loading...</div>
+  <div id="container"></div>
 
   <!-- ========= -->
   <!-- Libraries -->
@@ -36,23 +36,23 @@
         "likes": "defaultLikes",
       },
 
-      id: 2,  // This can be changed later to start at the beginning. It's here because the first data point (id = 1) is missing.
+      // id: 0,  // This may not even be necessary. And in fact it's not.
 
       initialize: function(){  // This is just here to show where it would go.
               // console.log('Beer has been intialized');
 
       },
 
-      parse: function (response) {  // This is necessary because the RESTful API returns an object and backbone.js' fetch() is not automatically setting these attributes. It would be better as a loop.
-            // console.log(response);
-            // console.log(this);
-            this.set("id", response.id);
-            this.set("name", response.name);
-            this.set("likes", response.likes);
+      // parse: function (response) {  // This is necessary because the RESTful API returns an object and backbone.js' fetch() is not automatically setting these attributes. It would be better as a loop.
+      //       // console.log(response);
+      //       // console.log(this);
+      //       this.set("id", response.id);
+      //       this.set("name", response.name);
+      //       this.set("likes", response.likes);
 
 
-            return true;
-      },
+      //       return true;
+      // },
 
       urlRoot: 'http://beer.fluentcloud.com/v1/beer',  // This only needs to be here if you're using the app to show a single beer.
 
@@ -114,11 +114,17 @@
         // });
         // var beerCooler = new BeerCooler(this.collection.toJSON());
         // console.log(beerCooler.length);
+        var _thisView = this;
         beerCooler.each(function(beer) {
-          var temp = beer.previousAttributes();
-          console.log(temp.id);
-          console.log(temp.name);
-          console.log(temp.likes);
+          console.log(beer.toJSON());
+
+          _thisView.$el.append(_thisView.template(beer.toJSON()));
+          // console.log(beer.name);
+          // console.log(beer.likes);
+          // var temp = beer.previousAttributes();
+          // console.log(temp.id);
+          // console.log(temp.name);
+          // console.log(temp.likes);
         });
         // for (model in this.collection){
         //   console.log(model);
