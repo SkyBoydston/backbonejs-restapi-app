@@ -13,7 +13,10 @@
   <h2>Beer app</h2>
   <h4>Click an item to like it!</h4>
 
-  <div id="container"></div>
+  <div id="container">
+  
+
+  </div>
 
   <!-- ========= -->
   <!-- Libraries -->
@@ -78,8 +81,9 @@
 
       // collection: BeerCooler,
       events: {
-          "click .beer":          "like"
-        },
+          "click .beer":          "like",
+          "click .creator":      "create"
+      },
 
       template: _.template("<div class='beer' id='<%= id %>' data-id='<%= id %>'  data-likes='<%= likes %>'><strong>Beer name: </strong><%= name %> <br><strong>Number of likes: </strong><%= likes %><br><br></div>"),
 
@@ -119,7 +123,7 @@
         // var beerCooler = new BeerCooler(this.collection.toJSON());
         // console.log(beerCooler.length);
         var _thisView = this;
-        _thisView.$el.html(''); // Clear the container each time for redraws
+        _thisView.$el.html('<h4><div class="creator">Click here to create a new beer!</div></h4>'); // Clear the container each time for redraws
         beerCooler.each(function(beer) {
           // console.log(beer.toJSON());
 
@@ -151,11 +155,24 @@
           item.save().done(function () { // queue up this callback to run when fetch() completes
             // _thisView.render();
             console.log(beerCooler);
-          var appView = new AppView({collection: beerCooler});
-        });
+            var appView = new AppView({collection: beerCooler});
+          });
           // console.log(beerCooler );
           // _thisView.render;
           // alert(name + likes);
+      },
+
+      create: function() {
+              console.log('clicked create');
+              var name = prompt("Please enter the new beer's name:");
+              // $.ajaxSetup({
+              //     headers: { "Content-Type": "application/json" }
+              // });
+              beerCooler.create({
+                    name: name,
+                    likes: "0",
+              });
+        
       }
 
     });
