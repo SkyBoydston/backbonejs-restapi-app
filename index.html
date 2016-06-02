@@ -11,6 +11,7 @@
   <!-- ==== -->
 
   <h2>Beer app</h2>
+  <h4>Click an item to like it!</h4>
 
   <div id="container"></div>
 
@@ -76,15 +77,18 @@
       el: '#container',
 
       // collection: BeerCooler,
+      events: {
+          "click .beer":          "like"
+        },
 
-      template: _.template("<%= id %>: <strong>Beer name: </strong><%= name %> <br><strong>Number of likes: </strong><%= likes %><br><br>"),
+      template: _.template("<div class='beer' id='<%= id %>' data-id='<%= id %>'  data-likes='<%= likes %>'><strong>Beer name: </strong><%= name %> <br><strong>Number of likes: </strong><%= likes %><br><br></div>"),
 
       initialize: function() {  //  cf. http://chilipepperdesign.com/2013/01/15/backbone-js-bind-callback-to-successful-model-fetch/
         // this.collection.on('reset', this.render, this);
         // this.listenTo(this.model, "change", this.render);
         console.log('view init touched');
          // _.bindAll(this, "render");
-         var _thisView = this;
+         var _thisView = this;  // cf. http://chilipepperdesign.com/2013/01/15/backbone-js-bind-callback-to-successful-model-fetch/
         this.collection.fetch({
             headers: {  //  This header must be declared to initialize the CORS spoofer.
                  'Content-Type': 'application/json'
@@ -95,8 +99,8 @@
               // this.render;
             }
         }).done(function () { // queue up this callback to run when fetch() completes
-       _thisView.render();
-     });
+            _thisView.render();
+        });
         // this.render();
       },
 
@@ -115,8 +119,9 @@
         // var beerCooler = new BeerCooler(this.collection.toJSON());
         // console.log(beerCooler.length);
         var _thisView = this;
+        _thisView.$el.html(''); // Clear the container each time for redraws
         beerCooler.each(function(beer) {
-          console.log(beer.toJSON());
+          // console.log(beer.toJSON());
 
           _thisView.$el.append(_thisView.template(beer.toJSON()));
           // console.log(beer.name);
@@ -133,6 +138,24 @@
         //   console.log(model);
         // }
 
+      },
+
+      like: function(e){
+          e.preventDefault();
+          var id = $(e.currentTarget).data("id");
+          var item = this.collection.get(id);
+          var likes = item.get("likes") + 1;
+          // var name = item.get("name");
+          item.set("likes", likes);
+          var _thisView = this;
+          item.save().done(function () { // queue up this callback to run when fetch() completes
+            // _thisView.render();
+            console.log(beerCooler);
+          var appView = new AppView({collection: beerCooler});
+        });
+          // console.log(beerCooler );
+          // _thisView.render;
+          // alert(name + likes);
       }
 
     });
