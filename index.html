@@ -32,31 +32,12 @@
 
   <script type="text/javascript">
 
-
     var Beer = Backbone.Model.extend({
 
       defaults: {
         "name": "defaultName",
         "likes": "defaultLikes",
       },
-
-      // id: 0,  // This may not even be necessary. And in fact it's not.
-
-      initialize: function(){  // This is just here to show where it would go.
-              // console.log('Beer has been intialized');
-
-      },
-
-      // parse: function (response) {  // This is necessary because the RESTful API returns an object and backbone.js' fetch() is not automatically setting these attributes. It would be better as a loop.
-      //       // console.log(response);
-      //       // console.log(this);
-      //       this.set("id", response.id);
-      //       this.set("name", response.name);
-      //       this.set("likes", response.likes);
-
-
-      //       return true;
-      // },
 
       urlRoot: 'http://beer.fluentcloud.com/v1/beer',  // This only needs to be here if you're using the app to show a single beer.
 
@@ -68,9 +49,7 @@
 
     var BeerCooler = Backbone.Collection.extend({
       model: Beer,
-      // initialize: function() {  // For some reason the collection's model has to be indicated like this as opposed to using "model: beer".
-      //   var beer = new Beer();
-      // },
+      
       url: 'http://beer.fluentcloud.com/v1/beer',
 
     });
@@ -88,99 +67,62 @@
       template: _.template("<div class='beer' id='<%= id %>' data-id='<%= id %>'  data-likes='<%= likes %>'><strong>Beer name: </strong><%= name %> <br><strong>Number of likes: </strong><%= likes %><br><br></div>"),
 
       initialize: function() {  //  cf. http://chilipepperdesign.com/2013/01/15/backbone-js-bind-callback-to-successful-model-fetch/
-        // this.collection.on('reset', this.render, this);
-        // this.listenTo(this.model, "change", this.render);
-        console.log('view init touched');
-         // _.bindAll(this, "render");
-         var _thisView = this;  // cf. http://chilipepperdesign.com/2013/01/15/backbone-js-bind-callback-to-successful-model-fetch/
+        
+        var _thisView = this;  // cf. http://chilipepperdesign.com/2013/01/15/backbone-js-bind-callback-to-successful-model-fetch/
+        
         this.collection.fetch({
             headers: {  //  This header must be declared to initialize the CORS spoofer.
                  'Content-Type': 'application/json'
-            },
-            success: function() {
-              console.log('fetch complete');
-              // console.log(this);
-              // this.render;
             }
-        }).done(function () { // queue up this callback to run when fetch() completes
+        }).done(function () { // Queue up this callback to run when fetch() completes
             _thisView.render();
         });
-        // this.render();
+        
       },
 
-      // render: function() {
-      //   this.$el.html(this.template(this.model.attributes));
-      //   return this;  // To enable chaining when you want to show more than one beer.
-      // }
+      
 
       render: function() {
-        // console.log('activated render');
-        // console.log(this.collection);
-        // console.log(beerCooler);
-        // this.collection.each(function(model){
-        //   console.log(model); 
-        // });
-        // var beerCooler = new BeerCooler(this.collection.toJSON());
-        // console.log(beerCooler.length);
-        var _thisView = this;
-        _thisView.$el.html('<h4><div class="creator">Click here to create a new beer!</div></h4>'); // Clear the container each time for redraws
-        beerCooler.each(function(beer) {
-          // console.log(beer.toJSON());
 
+        var _thisView = this;  // Again, this is necessary for the scope of the function below
+        _thisView.$el.html('<h4><div class="creator">Click here to create a new beer!</div></h4>'); // Clear the container each time for redraws
+
+        beerCooler.each(function(beer) {  // Here we're looping through the collection
           _thisView.$el.append(_thisView.template(beer.toJSON()));
-          // console.log(beer.name);
-          // console.log(beer.likes);
-          // var temp = beer.previousAttributes();
-          // console.log(temp.id);
-          // console.log(temp.name);
-          // console.log(temp.likes);
         });
-        // for (model in this.collection){
-        //   console.log(model);
-        // }
-        // for n this.collection){
-        //   console.log(model);
-        // }
 
       },
 
       like: function(e){
-          e.preventDefault();
+
+          e.preventDefault();  // Get relevant data from user clicked item and set it to model
           var id = $(e.currentTarget).data("id");
           var item = this.collection.get(id);
           var likes = item.get("likes") + 1;
-          // var name = item.get("name");
           item.set("likes", likes);
-          var _thisView = this;
-          item.save().done(function () { // queue up this callback to run when fetch() completes
-            // _thisView.render();
-            console.log(beerCooler);
+
+          var _thisView = this; // Again, this is necessary for the scope of the function below
+
+          item.save().done(function () {   // Save and then redraw to show the update
             var appView = new AppView({collection: beerCooler});
           });
-          // console.log(beerCooler );
-          // _thisView.render;
-          // alert(name + likes);
       },
 
       create: function() {
-              console.log('clicked create');
+
               var name = prompt("Please enter the new beer's name:");
-              // $.ajaxSetup({
-              //     headers: { "Content-Type": "application/json" }
-              // });
+
+              newBeer = new Beer({"name": name, "likes": 0});
               beerCooler.create({
                     name: name,
                     likes: "0",
               });
-        
       }
 
     });
 
     var beerCooler = new BeerCooler();
-    // beerCooler.fetch();
-    // console.log(beerCooler);
-    // var appView = new AppView({model: beer});
+    
     var appView = new AppView({collection: beerCooler});
 
   </script>
